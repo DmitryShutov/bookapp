@@ -10,6 +10,12 @@
     The person doesn't have any books
 </p>
 <br/>
+<div th:if="${!books.empty}" th:each="book: ${books}">
+    <a th:text="${book.getName() + ', ' + book.getAuthor() + ', ' + book.getYear()}"
+       th:href="@{/books/{id}(id=${book.getId()})}"
+       th:style="${book.getExpired()} ? 'color: red' : ''"
+    >book</a>
+</div>
 
 <form th:action="@{/people/{id}/edit(id=${person.getId()})}">
     <input type="submit" value="Edit"/>

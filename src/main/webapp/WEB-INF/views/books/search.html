@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search</title>
+</head>
+<body>
+<form method="get" th:action="@{/books/search}">
+    <label for="search">Search here:</label>
+    <input type="text" name="search" id="search"/>
+    <button type="submit">Search</button>
+</form>
+
+<div th:if="${books.empty}">
+    Books not found
+</div>
+
+<div th:if="${!books.empty}">
+    <p th:each="book : ${books}">
+        <span th:text="${book.getName() + ', ' +  book.getAuthor()}"></span>
+        <br/>
+    </p>
+</div>
+
+</body>
+</html>

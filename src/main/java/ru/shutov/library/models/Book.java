@@ -1,21 +1,44 @@
 package ru.shutov.library.models;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 
+import java.util.Date;
+
+@Entity
+@NamedEntityGraph(name = "Book.owner", attributeNodes = @NamedAttributeNode("owner"))
+@Table(name = "book")
 public class Book {
+
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
 
+    @Column(name = "name")
     @NotEmpty(message = "Name should not be empty")
     private String name;
 
+    @Column(name = "year")
     @Min(1800)
     private int year;
+
+    @Column(name = "author")
     @NotEmpty(message = "Author should not be empty")
     private String author;
 
-    private Integer person;
+    @ManyToOne
+    @JoinColumn(name = "person", referencedColumnName = "id")
+    private Person owner;
+
+    @Column(name = "assigned_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date assignedAt;
+
+    @Transient
+    private Boolean expired;
 
     public Book() {}
 
@@ -26,12 +49,12 @@ public class Book {
         this.author = author;
     }
 
-    public Book(int id, String name, String author, int year, Integer person) {
+    public Book(int id, String name, String author, int year, Person owner) {
         this.id = id;
         this.name = name;
         this.year = year;
         this.author = author;
-        this.person = person;
+        this.owner = owner;
     }
 
     public void setId(int id) {
@@ -66,15 +89,31 @@ public class Book {
         this.author = author;
     }
 
-    public Integer getPerson() {
-        return person;
+    public Person getOwner() {
+        return owner;
     }
 
-    public void setPerson(Integer person) {
-        this.person = person;
+    public void setOwner(Person person) {
+        this.owner = person;
     }
 
     public boolean hasPerson() {
-        return this.person != null;
+        return this.owner != null;
+    }
+
+    public Date getAssignedAt() {
+        return assignedAt;
+    }
+
+    public void setAssignedAt(Date assignedAt) {
+        this.assignedAt = assignedAt;
+    }
+
+    public Boolean getExpired() {
+        return expired;
+    }
+
+    public void setExpired(Boolean expired) {
+        this.expired = expired;
     }
 }

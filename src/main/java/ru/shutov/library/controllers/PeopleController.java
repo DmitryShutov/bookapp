@@ -5,10 +5,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.shutov.library.dao.BooksDAO;
-import ru.shutov.library.dao.PersonDAO;
 import ru.shutov.library.models.Book;
 import ru.shutov.library.models.Person;
+import ru.shutov.library.services.BooksService;
+import ru.shutov.library.services.PeopleService;
 
 import java.util.List;
 
@@ -20,18 +20,17 @@ import java.util.List;
 @RequestMapping("/people")
 public class PeopleController {
 
-    private final PersonDAO personDAO;
-    private final BooksDAO booksDAO;
+    private final PeopleService peopleService;
+    private final BooksService booksService;
 
-    public PeopleController(PersonDAO personDAO, BooksDAO booksDAO) {
-
-        this.personDAO = personDAO;
-        this.booksDAO = booksDAO;
+    public PeopleController(PeopleService peopleService, BooksService booksService) {
+        this.peopleService = peopleService;
+        this.booksService = booksService;
     }
 
     @GetMapping()
     public String showAll(Model model) {
-        model.addAttribute("people", personDAO.index());
+        model.addAttribute("people", peopleService.findAll());
         return "people/index";
     }
 
@@ -42,15 +41,16 @@ public class PeopleController {
 
     @GetMapping("/{id}")
     public String getById(@PathVariable("id") int id, Model model) {
-        model.addAttribute("person", personDAO.show(id));
-        List<Book> books = booksDAO.findBooksByPersonId(id);
-        model.addAttribute("books", booksDAO.findBooksByPersonId(id));
+        model.addAttribute("person", peopleService.findOne(id));
+        Person person = peopleService.findOne(id);
+        List<Book> books = booksService.findByOwner(person);
+        model.addAttribute("books", books);
         return "people/show";
     }
 
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable("id") int id, Model model) {
-        model.addAttribute("person", personDAO.show(id));
+        model.addAttribute("person", peopleService.findOne(id));
         return "people/edit";
     }
 
@@ -60,7 +60,7 @@ public class PeopleController {
         if (bindingResult.hasErrors()) {
             return "people/new";
         }
-        personDAO.save(person);
+        peopleService.save(person);
         return "redirect:/people";
     }
 
@@ -71,13 +71,13 @@ public class PeopleController {
             return "people/edit";
         }
 
-        personDAO.update(id, person);
+        peopleService.update(id, person);
         return "redirect:/people";
     }
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable("id") int id) {
-        personDAO.delete(id);
+        peopleService.delete(id);
         return "redirect:/people";
     }
 

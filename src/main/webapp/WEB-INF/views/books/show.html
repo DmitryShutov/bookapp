@@ -6,22 +6,22 @@
 </head>
 <body>
 <p th:text="${book.getName() + ', ' + book.getAuthor() + ', ' + book.getYear()}">VALUE</p>
-<p th:if="${book.person == null}">
+<p th:if="${book.owner == null}">
     The book is at the library. Do we need to assign it?
-    <form th:if="${book.person == null}" th:method="PATCH" th:action="@{/books/{id}/addPerson(id=${book.getId()})}" th:object="${book}">
-        <select th:field="*{person}">
+    <form th:if="${book.owner == null}" th:method="PATCH" th:action="@{/books/{id}/assign(id=${book.getId()})}" th:object="${book}">
+        <select th:field="*{owner}">
             <option value="">-- Select a person --</option>
             <option th:each="person : ${people}"
                     th:value="${person.id}"
                     th:text="${person.name}"
-                    th:selected="${book.person != null and person.id == book.person}">Person</option>
+                    th:selected="${book.owner != null and person.id == book.owner}">Person</option>
         </select>
     <input type="submit" value="Assign"/>
     </form>
 </p>
-<p th:if="${book.person != null}">
-    These book is assigned to <span th:text="${person.getName()}"> </span>
-    <form th:if="${book.person != null}" th:method="DELETE" th:action="@{/books/{id}/addPerson(id=${book.getId()})}" th:object="${book}">
+<p th:if="${book.owner != null}">
+    These book is assigned to <span th:text="${owner.getName()}"> </span>
+    <form th:if="${book.owner != null}" th:method="PATCH" th:action="@{/books/{id}/unassign(id=${book.getId()})}" th:object="${book}">
         <input type="submit" value="Unassign">
     </form>
 </p>
